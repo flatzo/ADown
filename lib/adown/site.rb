@@ -37,19 +37,24 @@ module ADown
 
             Dir.mkdir(directory) unless Dir.exists?(directory)
             
+            threads = []
             @images.each do |image|
-                image.download(directory)
+                threads << Thread.new {
+                    image.download(directory)
+                }
             end
+            threads.each {|t| t.join}
         end
     end
-
+    
     class Image < Request
-       
+        
         def download(directory)
             puts "Downloading Image"
             fetch if @url.nil?
-
+            
             file_path = File.expand_path("#{@id}.jpg", directory)
+
             File.open(file_path,'w') do |file|
                 file << HTTParty.get(@url)
             end
