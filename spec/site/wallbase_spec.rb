@@ -18,7 +18,8 @@ describe Wallbase::Album do
     it "downloads pictures (3..5) from an album" do
       images = @album.download('/tmp/ADown/spec/wallbase/', {:range => (3..5)})
       images.each do |img|
-        ((Time.now - File.stat(img.file_path).mtime).to_i.should eql 0)
+        # Accepts up to 2 seconds of difference
+        ((Time.now - File.stat(img.file_path).mtime).to_i.should < 2)
       end
     end
   end
